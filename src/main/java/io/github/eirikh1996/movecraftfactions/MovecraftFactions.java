@@ -6,7 +6,6 @@ import com.massivecraft.factions.entity.*;
 import com.massivecraft.massivecore.ps.PS;
 import net.countercraft.movecraft.Movecraft;
 import net.countercraft.movecraft.MovecraftLocation;
-import net.countercraft.movecraft.craft.Craft;
 import net.countercraft.movecraft.events.CraftRotateEvent;
 import net.countercraft.movecraft.events.CraftTranslateEvent;
 import net.countercraft.movecraft.utils.HashHitBox;
@@ -27,6 +26,7 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        String[] localisations = {"en", "no", "de", "fr"};
         I18nSupport.initialize();
         Plugin tempFactionsPlugin = getServer().getPluginManager().getPlugin("Factions");
         if (tempFactionsPlugin != null){
@@ -50,6 +50,10 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
             getLogger().severe(I18nSupport.getInternationalisedString("Startup - Movecraft not found"));
             getServer().getPluginManager().disablePlugin(this);
         }
+        saveDefaultConfig();
+        Settings.locale = getConfig().getString("locale", "en");
+        Settings.allowMovementInSafezone = getConfig().getBoolean("allowMovementInSafezone", true);
+        Settings.allowMovementInWarzone = getConfig().getBoolean("allowMovementInWarzone", true);
         getServer().getPluginManager().registerEvents(this, this);
     }
 
@@ -62,7 +66,7 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
             PS ps = PS.valueOf(moveLoc.toBukkit(event.getCraft().getW()));
             faction = BoardColl.get().getFactionAt(ps);
             if (faction == FactionColl.get().getSafezone()){
-                if (!Settings.allowMovementInSafezone){
+                if (!Settings.allowMovementInSafezone && !event.getCraft().getNotificationPlayer().hasPermission("movecraftfactions.safezone.move")){
                     event.setFailMessage(I18nSupport.getInternationalisedString("Translation - Failed Cannot move in safezone"));
                     event.setCancelled(true);
                 }
@@ -88,7 +92,7 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
     public void onCraftRotate(CraftRotateEvent event){
         HitBox newHitbox = event.getNewHitBox();
         MPlayer mPlayer = MPlayer.get(event.getCraft().getNotificationPlayer());
-        Faction faction = FactionColl.get().getNone();
+        Faction faction;
         for (MovecraftLocation moveLoc : newHitbox){
             PS ps = PS.valueOf(moveLoc.toBukkit(event.getCraft().getW()));
             faction = BoardColl.get().getFactionAt(ps);
@@ -101,7 +105,7 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
 
             else if (faction == FactionColl.get().getWarzone()){
                 if (!Settings.allowMovementInWarzone){
-                    event.setFailMessage(I18nSupport.getInternationalisedString("Rotation- Failed Cannot move in warzone"));
+                    event.setFailMessage(I18nSupport.getInternationalisedString("Rotation - Failed Cannot move in warzone"));
                     event.setCancelled(true);
                 }
             }
