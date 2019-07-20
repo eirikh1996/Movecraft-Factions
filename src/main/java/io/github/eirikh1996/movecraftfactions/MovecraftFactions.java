@@ -15,6 +15,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+
 public class MovecraftFactions extends JavaPlugin implements Listener {
     private static MovecraftFactions instance;
     private static Movecraft movecraftPlugin;
@@ -27,6 +29,12 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         String[] localisations = {"en", "no", "de", "fr"};
+        for (String locale : localisations){
+            File langFile = new File(getDataFolder(),"localisation/mflang_" + locale + ".properties");
+            if (!langFile.exists()){
+                saveResource("localisation/mflang_" + locale + ".properties", false);
+            }
+        }
         I18nSupport.initialize();
         Plugin tempFactionsPlugin = getServer().getPluginManager().getPlugin("Factions");
         if (tempFactionsPlugin != null){
