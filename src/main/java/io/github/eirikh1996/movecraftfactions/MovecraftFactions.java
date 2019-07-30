@@ -66,6 +66,7 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
         Settings.locale = getConfig().getString("locale", "en");
         Settings.allowMovementInSafezone = getConfig().getBoolean("allowMovementInSafezone", true);
         Settings.allowMovementInWarzone = getConfig().getBoolean("allowMovementInWarzone", true);
+        Settings.reduceStrengthOnCraftSink = getConfig().getBoolean("reduceStrengthOnCraftSink", true);
         getServer().getPluginManager().registerEvents(this, this);
     }
 
