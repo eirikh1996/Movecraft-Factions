@@ -8,7 +8,6 @@ import com.massivecraft.massivecore.ps.PS;
 import net.countercraft.movecraft.Movecraft;
 import net.countercraft.movecraft.MovecraftLocation;
 import net.countercraft.movecraft.craft.Craft;
-import net.countercraft.movecraft.events.CraftDetectEvent;
 import net.countercraft.movecraft.events.CraftRotateEvent;
 import net.countercraft.movecraft.events.CraftSinkEvent;
 import net.countercraft.movecraft.events.CraftTranslateEvent;
@@ -86,7 +85,7 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
             }
 
             else if (faction == FactionColl.get().getWarzone()){
-                if (!Settings.allowMovementInWarzone){
+                if (!Settings.allowMovementInWarzone && !event.getCraft().getNotificationPlayer().hasPermission("movecraftfactions.warzone.move")){
                     event.setFailMessage(I18nSupport.getInternationalisedString("Translation - Failed Cannot move in warzone"));
                     event.setCancelled(true);
                 }
