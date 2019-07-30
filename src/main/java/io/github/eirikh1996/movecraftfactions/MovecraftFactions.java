@@ -38,6 +38,11 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
                 saveResource("localisation/mflang_" + locale + ".properties", false);
             }
         }
+        saveDefaultConfig();
+        Settings.locale = getConfig().getString("locale", "en");
+        Settings.allowMovementInSafezone = getConfig().getBoolean("allowMovementInSafezone", true);
+        Settings.allowMovementInWarzone = getConfig().getBoolean("allowMovementInWarzone", true);
+        Settings.reduceStrengthOnCraftSink = getConfig().getBoolean("reduceStrengthOnCraftSink", true);
         I18nSupport.initialize();
         Plugin tempFactionsPlugin = getServer().getPluginManager().getPlugin("Factions");
         if (tempFactionsPlugin != null){
@@ -61,11 +66,7 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
             getLogger().severe(I18nSupport.getInternationalisedString("Startup - Movecraft not found"));
             getServer().getPluginManager().disablePlugin(this);
         }
-        saveDefaultConfig();
-        Settings.locale = getConfig().getString("locale", "en");
-        Settings.allowMovementInSafezone = getConfig().getBoolean("allowMovementInSafezone", true);
-        Settings.allowMovementInWarzone = getConfig().getBoolean("allowMovementInWarzone", true);
-        Settings.reduceStrengthOnCraftSink = getConfig().getBoolean("reduceStrengthOnCraftSink", true);
+
         getServer().getPluginManager().registerEvents(this, this);
     }
 

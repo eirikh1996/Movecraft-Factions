@@ -22,12 +22,14 @@
         <dependency>
             <groupId>com.massivecraft</groupId>
             <artifactId>MassiveCore</artifactId>
+            <version>2.14.1</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/libs/MassiveCore.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.massivecraft</groupId>
             <artifactId>Factions</artifactId>
+            <version>2.14.1</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/libs/Factions.jar</systemPath>
         </dependency>

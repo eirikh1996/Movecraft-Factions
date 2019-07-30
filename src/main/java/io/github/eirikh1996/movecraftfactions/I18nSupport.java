@@ -11,7 +11,7 @@ public class I18nSupport {
         if (!locDir.exists()){
             locDir.mkdirs();
         }
-        File locFile = new File(locDir, String.format("mflang_%s", Settings.locale));
+        File locFile = new File(locDir, String.format("mflang_%s.properties", Settings.locale));
         InputStream is;
         try {
             is = new FileInputStream(locFile);
