@@ -3,10 +3,14 @@ package io.github.eirikh1996.movecraftfactions;
 import com.massivecraft.factions.Factions;
 import com.massivecraft.factions.TerritoryAccess;
 import com.massivecraft.factions.entity.*;
+import com.massivecraft.factions.event.EventFactionsPowerChange;
 import com.massivecraft.massivecore.ps.PS;
 import net.countercraft.movecraft.Movecraft;
 import net.countercraft.movecraft.MovecraftLocation;
+import net.countercraft.movecraft.craft.Craft;
+import net.countercraft.movecraft.events.CraftDetectEvent;
 import net.countercraft.movecraft.events.CraftRotateEvent;
+import net.countercraft.movecraft.events.CraftSinkEvent;
 import net.countercraft.movecraft.events.CraftTranslateEvent;
 import net.countercraft.movecraft.utils.HashHitBox;
 import net.countercraft.movecraft.utils.HitBox;
@@ -124,6 +128,38 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
                 }
             }
         }
+    }
+
+    @EventHandler
+    public void onCraftSink(CraftSinkEvent event){
+        if (!Settings.reduceStrengthOnCraftSink){
+            return;
+        }
+        Craft craft = event.getCraft();
+        MPlayer mp = MPlayer.get(craft.getNotificationPlayer());
+        double powerOnDeath = mp.getPowerPerDeath();
+        double power = mp.getPower();
+        double newPower = power + powerOnDeath;
+        Faction faction = FactionColl.get().getNone();
+        for (MovecraftLocation ml : craft.getHitBox()){
+            faction = BoardColl.get().getFactionAt(PS.valueOf(ml.toBukkit(craft.getW())));
+            if (faction != FactionColl.get().getNone()){
+                break;
+            }
+        }
+        if (!faction.getFlag(MFlag.getFlagPowerloss())){
+            mp.msg(I18nSupport.getInternationalisedString("Sink - No Lost Power Territory"));
+            return;
+        }
+        if (!MConf.get().worldsPowerLossEnabled.contains(craft.getW())){
+            mp.msg(I18nSupport.getInternationalisedString("Sink - No Lost Power World"));
+            return;
+        }
+        mp.msg(String.format(I18nSupport.getInternationalisedString("Sink - Power Lost"), newPower, mp.getPowerMax()));
+        EventFactionsPowerChange powerChangeEvent = new EventFactionsPowerChange(null, mp, EventFactionsPowerChange.PowerChangeReason.UNDEFINED, newPower);
+        powerChangeEvent.run();
+        mp.setPower(newPower);
+
     }
 
     public static MovecraftFactions getInstance() {
