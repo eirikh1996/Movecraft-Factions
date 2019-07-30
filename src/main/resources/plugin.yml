@@ -1,5 +1,6 @@
 name: Movecraft-Factions
 main: io.github.eirikh1996.movecraftfactions.MovecraftFactions
+author: eirikh1996
 version: 1.0
 depend:
   - Factions
