@@ -79,14 +79,14 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
             PS ps = PS.valueOf(moveLoc.toBukkit(event.getCraft().getW()));
             faction = BoardColl.get().getFactionAt(ps);
             if (faction == FactionColl.get().getSafezone()){
-                if (!Settings.allowMovementInSafezone && !event.getCraft().getNotificationPlayer().hasPermission("movecraftfactions.safezone.move")){
+                if (!Settings.allowMovementInSafezone && event.getCraft().getNotificationPlayer() != null && !event.getCraft().getNotificationPlayer().hasPermission("movecraftfactions.safezone.move")){
                     event.setFailMessage(I18nSupport.getInternationalisedString("Translation - Failed Cannot move in safezone"));
                     event.setCancelled(true);
                 }
             }
 
             else if (faction == FactionColl.get().getWarzone()){
-                if (!Settings.allowMovementInWarzone && !event.getCraft().getNotificationPlayer().hasPermission("movecraftfactions.warzone.move")){
+                if (!Settings.allowMovementInWarzone && event.getCraft().getNotificationPlayer() != null && !event.getCraft().getNotificationPlayer().hasPermission("movecraftfactions.warzone.move")){
                     event.setFailMessage(I18nSupport.getInternationalisedString("Translation - Failed Cannot move in warzone"));
                     event.setCancelled(true);
                 }
