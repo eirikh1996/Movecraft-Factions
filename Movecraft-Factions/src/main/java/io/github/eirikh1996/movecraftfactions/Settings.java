@@ -5,4 +5,5 @@ public class Settings {
     public static boolean allowMovementInSafezone;
     public static boolean allowMovementInWarzone;
     public static boolean reduceStrengthOnCraftSink;
+    public static boolean legacy;
 }

@@ -5,6 +5,7 @@ import com.massivecraft.factions.TerritoryAccess;
 import com.massivecraft.factions.entity.*;
 import com.massivecraft.factions.event.EventFactionsPowerChange;
 import com.massivecraft.massivecore.ps.PS;
+import io.github.eirikh1996.movecraftfactions.f3.F3Utils;
 import net.countercraft.movecraft.Movecraft;
 import net.countercraft.movecraft.MovecraftLocation;
 import net.countercraft.movecraft.craft.Craft;
@@ -19,11 +20,14 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.lang.reflect.Method;
 
 public class MovecraftFactions extends JavaPlugin implements Listener {
     private static MovecraftFactions instance;
     private static Movecraft movecraftPlugin;
     private static Factions factionsPlugin;
+    private F3Utils f3Utils;
+
     @Override
     public void onLoad() {
         instance = this;
@@ -31,7 +35,12 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        String version = getServer().getClass().getPackage().getName().substring(getServer().getClass().getPackage().getName().lastIndexOf(".") + 1);
+        Settings.legacy = Integer.parseInt(version.split("_")[1]) <= 12;
         String[] localisations = {"en", "no", "de", "fr"};
+        if (!Settings.legacy){
+            f3Utils = new F3Utils();
+        }
         for (String locale : localisations){
             File langFile = new File(getDataFolder(),"localisation/mflang_" + locale + ".properties");
             if (!langFile.exists()){
@@ -93,8 +102,9 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
             }
             else if (faction != FactionColl.get().getNone()){
                 TerritoryAccess tAccess = BoardColl.get().getTerritoryAccessAt(ps);
-                if (!tAccess.isMPlayerGranted(mPlayer)){
+                if (Settings.legacy ? !tAccess.isMPlayerGranted(mPlayer) : !f3Utils.hasAccess(mPlayer, tAccess)){
                     event.setFailMessage(I18nSupport.getInternationalisedString("Translation - Failed No access to faction").replace("{FACTION}", faction.getName(mPlayer.getFaction())));
+                    event.setCancelled(true);
                 }
             }
         }
@@ -124,8 +134,9 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
             }
             else if (faction != FactionColl.get().getNone()){
                 TerritoryAccess tAccess = BoardColl.get().getTerritoryAccessAt(ps);
-                if (!tAccess.isMPlayerGranted(mPlayer)){
+                if (Settings.legacy ? !tAccess.isMPlayerGranted(mPlayer) : !f3Utils.hasAccess(mPlayer, tAccess)){
                     event.setFailMessage(I18nSupport.getInternationalisedString("Rotation - Failed No access to faction").replace("{FACTION}", faction.getName(mPlayer.getFaction())));
+                    event.setCancelled(true);
                 }
             }
         }
