@@ -14,8 +14,10 @@ import net.countercraft.movecraft.events.CraftSinkEvent;
 import net.countercraft.movecraft.events.CraftTranslateEvent;
 import net.countercraft.movecraft.utils.HashHitBox;
 import net.countercraft.movecraft.utils.HitBox;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -31,6 +33,7 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
     @Override
     public void onLoad() {
         instance = this;
+        UpdateManager.initialize();
     }
 
     @Override
@@ -77,6 +80,7 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
         }
 
         getServer().getPluginManager().registerEvents(this, this);
+        UpdateManager.getInstance().start();
     }
 
     @EventHandler
@@ -174,7 +178,23 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
 
     }
 
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event){
+        Player p = event.getPlayer();
+        if (p.hasPermission("movecraftfactions.update")){
+            p.sendMessage("An update of Movecraft-Factions is now available. Download from https://dev.bukkit.org/projects/movecraft-factions");
+        }
+    }
+
     public static MovecraftFactions getInstance() {
         return instance;
+    }
+
+    public static Factions getFactionsPlugin() {
+        return factionsPlugin;
+    }
+
+    public static Movecraft getMovecraftPlugin() {
+        return movecraftPlugin;
     }
 }
