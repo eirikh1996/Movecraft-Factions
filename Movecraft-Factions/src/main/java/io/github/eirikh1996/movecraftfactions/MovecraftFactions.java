@@ -54,27 +54,29 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
         Settings.locale = getConfig().getString("locale", "en");
         Settings.allowMovementInSafezone = getConfig().getBoolean("allowMovementInSafezone", true);
         Settings.allowMovementInWarzone = getConfig().getBoolean("allowMovementInWarzone", true);
+        Settings.allowSinkInSafezone = getConfig().getBoolean("allowSinkInSafezone", false);
+        Settings.allowSinkInWarzone = getConfig().getBoolean("allowSinkInWarzone", true);
         Settings.reduceStrengthOnCraftSink = getConfig().getBoolean("reduceStrengthOnCraftSink", true);
         I18nSupport.initialize();
         Plugin tempFactionsPlugin = getServer().getPluginManager().getPlugin("Factions");
-        if (tempFactionsPlugin != null){
-            if (tempFactionsPlugin instanceof Factions){
+        if (tempFactionsPlugin instanceof Factions){
+
                 getLogger().info(I18nSupport.getInternationalisedString("Startup - Factions found"));
                 factionsPlugin = (Factions) tempFactionsPlugin;
-            }
+
         }
-        if (factionsPlugin == null){
+        if (factionsPlugin == null || !factionsPlugin.isEnabled()){
             getLogger().severe(I18nSupport.getInternationalisedString("Startup - Factions not found"));
             getServer().getPluginManager().disablePlugin(this);
         }
         Plugin tempMovecraftPlugin = getServer().getPluginManager().getPlugin("Movecraft");
-        if (tempMovecraftPlugin != null){
-            if (tempMovecraftPlugin instanceof Movecraft){
+        if (tempMovecraftPlugin instanceof Movecraft){
+
                 getLogger().info(I18nSupport.getInternationalisedString("Startup - Movecraft found"));
                 movecraftPlugin = (Movecraft) tempMovecraftPlugin;
-            }
+
         }
-        if (movecraftPlugin == null){
+        if (movecraftPlugin == null || !movecraftPlugin.isEnabled()){
             getLogger().severe(I18nSupport.getInternationalisedString("Startup - Movecraft not found"));
             getServer().getPluginManager().disablePlugin(this);
         }
@@ -106,7 +108,10 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
             }
             else if (faction != FactionColl.get().getNone()){
                 TerritoryAccess tAccess = BoardColl.get().getTerritoryAccessAt(ps);
-                if (Settings.legacy ? !tAccess.isMPlayerGranted(mPlayer) : !f3Utils.hasAccess(mPlayer, tAccess)){
+                if (tAccess.getHostFaction().isPermitted(MPerm.getPermBuild(), tAccess.getHostFaction().getRelationTo(mPlayer))){
+                    return;
+                }
+                if (!mPlayer.isOverriding() && (Settings.legacy ? !tAccess.isMPlayerGranted(mPlayer) : !f3Utils.hasAccess(mPlayer, tAccess))){
                     event.setFailMessage(I18nSupport.getInternationalisedString("Translation - Failed No access to faction").replace("{FACTION}", faction.getName(mPlayer.getFaction())));
                     event.setCancelled(true);
                 }
@@ -138,6 +143,9 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
             }
             else if (faction != FactionColl.get().getNone()){
                 TerritoryAccess tAccess = BoardColl.get().getTerritoryAccessAt(ps);
+                if (tAccess.getHostFaction().isPermitted(MPerm.getPermBuild(), tAccess.getHostFaction().getRelationTo(mPlayer))){
+                    return;
+                }
                 if (Settings.legacy ? !tAccess.isMPlayerGranted(mPlayer) : !f3Utils.hasAccess(mPlayer, tAccess)){
                     event.setFailMessage(I18nSupport.getInternationalisedString("Rotation - Failed No access to faction").replace("{FACTION}", faction.getName(mPlayer.getFaction())));
                     event.setCancelled(true);
@@ -148,9 +156,7 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onCraftSink(CraftSinkEvent event){
-        if (!Settings.reduceStrengthOnCraftSink){
-            return;
-        }
+
         Craft craft = event.getCraft();
         MPlayer mp = MPlayer.get(craft.getNotificationPlayer());
         double powerOnDeath = mp.getPowerPerDeath();
@@ -162,6 +168,18 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
             if (faction != FactionColl.get().getNone()){
                 break;
             }
+        }
+        if (!Settings.allowSinkInSafezone && faction == FactionColl.get().getSafezone()){
+            mp.msg(I18nSupport.getInternationalisedString("Sink - Cannot sink in Safezone"));
+            event.setCancelled(true);
+            return;
+        } else if (!Settings.allowSinkInWarzone && faction == FactionColl.get().getWarzone()){
+            event.setCancelled(true);
+            mp.msg(I18nSupport.getInternationalisedString("Sink - Cannot sink in Warzone"));
+            return;
+        }
+        if (!Settings.reduceStrengthOnCraftSink){
+            return;
         }
         if (!faction.getFlag(MFlag.getFlagPowerloss())){
             mp.msg(I18nSupport.getInternationalisedString("Sink - No Lost Power Territory"));

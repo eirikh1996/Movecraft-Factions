@@ -1,4 +1,6 @@
 locale : en
 allowMovementInSafezone: true
 allowMovementInWarzone: true
+allowSinkInSafezone: false
+allowSinkInWarzone: true
 reduceStrengthOnCraftSink: true
