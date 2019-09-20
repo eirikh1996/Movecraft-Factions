@@ -98,6 +98,7 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
                     event.setFailMessage(I18nSupport.getInternationalisedString("Translation - Failed Cannot move in safezone"));
                     event.setCancelled(true);
                 }
+                return;
             }
 
             else if (faction == FactionColl.get().getWarzone()){
@@ -105,6 +106,7 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
                     event.setFailMessage(I18nSupport.getInternationalisedString("Translation - Failed Cannot move in warzone"));
                     event.setCancelled(true);
                 }
+                return;
             }
             else if (faction != FactionColl.get().getNone()){
                 TerritoryAccess tAccess = BoardColl.get().getTerritoryAccessAt(ps);
@@ -133,6 +135,7 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
                     event.setFailMessage(I18nSupport.getInternationalisedString("Rotation - Failed Cannot move in safezone"));
                     event.setCancelled(true);
                 }
+                return;
             }
 
             else if (faction == FactionColl.get().getWarzone()){
@@ -140,6 +143,7 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
                     event.setFailMessage(I18nSupport.getInternationalisedString("Rotation - Failed Cannot move in warzone"));
                     event.setCancelled(true);
                 }
+                return;
             }
             else if (faction != FactionColl.get().getNone()){
                 TerritoryAccess tAccess = BoardColl.get().getTerritoryAccessAt(ps);
