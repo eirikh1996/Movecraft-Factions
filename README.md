@@ -14,6 +14,5 @@ Movecraft versions earlier than 7.0 is not supported!
 - Deny craft movement to territory the players piloting the crafts has no access to
 
 # Planned features
-- Compatibility with Factions3, a Factions fork compatible with 1.13+
 - Allow/Deny sinking in safezone/warzone
 
