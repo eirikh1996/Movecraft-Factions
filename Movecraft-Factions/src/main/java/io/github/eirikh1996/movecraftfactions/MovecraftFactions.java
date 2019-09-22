@@ -1,10 +1,12 @@
 package io.github.eirikh1996.movecraftfactions;
 
 import com.massivecraft.factions.Factions;
+import com.massivecraft.factions.Rel;
 import com.massivecraft.factions.TerritoryAccess;
 import com.massivecraft.factions.entity.*;
 import com.massivecraft.factions.event.EventFactionsPowerChange;
 import com.massivecraft.massivecore.ps.PS;
+import com.massivecraft.massivecore.util.MUtil;
 import io.github.eirikh1996.movecraftfactions.f3.F3Utils;
 import net.countercraft.movecraft.Movecraft;
 import net.countercraft.movecraft.MovecraftLocation;
@@ -14,6 +16,7 @@ import net.countercraft.movecraft.events.CraftSinkEvent;
 import net.countercraft.movecraft.events.CraftTranslateEvent;
 import net.countercraft.movecraft.utils.HashHitBox;
 import net.countercraft.movecraft.utils.HitBox;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -23,11 +26,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.util.HashSet;
 
 public class MovecraftFactions extends JavaPlugin implements Listener {
     private static MovecraftFactions instance;
     private static Movecraft movecraftPlugin;
     private static Factions factionsPlugin;
+    private MPerm craftsPerm;
     private F3Utils f3Utils;
 
     @Override
@@ -52,11 +57,6 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
         }
         saveDefaultConfig();
         Settings.locale = getConfig().getString("locale", "en");
-        Settings.allowMovementInSafezone = getConfig().getBoolean("allowMovementInSafezone", true);
-        Settings.allowMovementInWarzone = getConfig().getBoolean("allowMovementInWarzone", true);
-        Settings.allowSinkInSafezone = getConfig().getBoolean("allowSinkInSafezone", false);
-        Settings.allowSinkInWarzone = getConfig().getBoolean("allowSinkInWarzone", true);
-        Settings.reduceStrengthOnCraftSink = getConfig().getBoolean("reduceStrengthOnCraftSink", true);
         I18nSupport.initialize();
         Plugin tempFactionsPlugin = getServer().getPluginManager().getPlugin("Factions");
         if (tempFactionsPlugin instanceof Factions){
@@ -80,13 +80,25 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
             getLogger().severe(I18nSupport.getInternationalisedString("Startup - Movecraft not found"));
             getServer().getPluginManager().disablePlugin(this);
         }
-
+        Settings.allowMovementInSafezone = getConfig().getBoolean("allowMovementInSafezone", true);
+        Settings.allowMovementInWarzone = getConfig().getBoolean("allowMovementInWarzone", true);
+        Settings.allowSinkInSafezone = getConfig().getBoolean("allowSinkInSafezone", false);
+        Settings.allowSinkInWarzone = getConfig().getBoolean("allowSinkInWarzone", true);
+        Settings.reduceStrengthOnCraftSink = getConfig().getBoolean("reduceStrengthOnCraftSink", true);
+        if (Settings.legacy) {
+            craftsPerm = MPerm.getCreative(1050, "crafts", "crafts", "Allows movement of piloted crafts in the territory", MUtil.set(Rel.ALLY, Rel.LEADER, Rel.OFFICER, Rel.MEMBER), true, true, true);
+        } else {
+            craftsPerm = f3Utils.getCreative(1050, "crafts", "crafts", "Allows movement of piloted crafts in the territory", MUtil.set("ALLY", "LEADER", "OFFICER", "MEMBER"), true, true, true);
+        }
         getServer().getPluginManager().registerEvents(this, this);
         UpdateManager.getInstance().start();
     }
 
     @EventHandler
     public void onCraftTranslate(CraftTranslateEvent event){
+        //ignore sinking crafts
+        if (event.getCraft().getSinking())
+            return;
         HashHitBox newHitbox = event.getNewHitBox();
         MPlayer mPlayer = MPlayer.get(event.getCraft().getNotificationPlayer());
         Faction faction;
@@ -110,11 +122,11 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
             }
             else if (faction != FactionColl.get().getNone()){
                 TerritoryAccess tAccess = BoardColl.get().getTerritoryAccessAt(ps);
-                if (tAccess.getHostFaction().isPermitted(MPerm.getPermBuild(), tAccess.getHostFaction().getRelationTo(mPlayer))){
+                if (Settings.legacy ? tAccess.getHostFaction().isPermitted(getCraftsPerm(), tAccess.getHostFaction().getRelationTo(mPlayer)) : (f3Utils != null && f3Utils.isPermitted(getCraftsPerm(), tAccess.getHostFaction(), mPlayer))){
                     return;
                 }
-                if (!mPlayer.isOverriding() && (Settings.legacy ? !tAccess.isMPlayerGranted(mPlayer) : !f3Utils.hasAccess(mPlayer, tAccess))){
-                    event.setFailMessage(I18nSupport.getInternationalisedString("Translation - Failed No access to faction").replace("{FACTION}", faction.getName(mPlayer.getFaction())));
+                if (!mPlayer.isOverriding() && (Settings.legacy ? !tAccess.isMPlayerGranted(mPlayer) : (f3Utils != null && !f3Utils.hasAccess(mPlayer, tAccess)))){
+                    event.setFailMessage(I18nSupport.getInternationalisedString("Translation - Failed No access to faction").replace("{FACTION}", faction.getName(mPlayer.getFaction()) + ChatColor.RESET));
                     event.setCancelled(true);
                 }
             }
@@ -124,6 +136,9 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onCraftRotate(CraftRotateEvent event){
+        //ignore sinking crafts
+        if (event.getCraft().getSinking())
+            return;
         HitBox newHitbox = event.getNewHitBox();
         MPlayer mPlayer = MPlayer.get(event.getCraft().getNotificationPlayer());
         Faction faction;
@@ -147,11 +162,11 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
             }
             else if (faction != FactionColl.get().getNone()){
                 TerritoryAccess tAccess = BoardColl.get().getTerritoryAccessAt(ps);
-                if (tAccess.getHostFaction().isPermitted(MPerm.getPermBuild(), tAccess.getHostFaction().getRelationTo(mPlayer))){
+                if (Settings.legacy ? tAccess.getHostFaction().isPermitted(getCraftsPerm(), tAccess.getHostFaction().getRelationTo(mPlayer)) : (f3Utils != null && f3Utils.isPermitted(getCraftsPerm(), tAccess.getHostFaction(), mPlayer))){
                     return;
                 }
-                if (Settings.legacy ? !tAccess.isMPlayerGranted(mPlayer) : !f3Utils.hasAccess(mPlayer, tAccess)){
-                    event.setFailMessage(I18nSupport.getInternationalisedString("Rotation - Failed No access to faction").replace("{FACTION}", faction.getName(mPlayer.getFaction())));
+                if (Settings.legacy ? !tAccess.isMPlayerGranted(mPlayer) : (f3Utils != null && !f3Utils.hasAccess(mPlayer, tAccess))){
+                    event.setFailMessage(I18nSupport.getInternationalisedString("Rotation - Failed No access to faction").replace("{FACTION}", faction.getName(mPlayer.getFaction()) + ChatColor.RESET));
                     event.setCancelled(true);
                 }
             }
@@ -203,7 +218,7 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event){
         Player p = event.getPlayer();
-        if (p.hasPermission("movecraftfactions.update")){
+        if (p.hasPermission("movecraftfactions.update") && UpdateManager.getInstance().checkUpdate(UpdateManager.getInstance().getCurrentVersion()) > UpdateManager.getInstance().getCurrentVersion()){
             p.sendMessage("An update of Movecraft-Factions is now available. Download from https://dev.bukkit.org/projects/movecraft-factions");
         }
     }
@@ -218,5 +233,9 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
 
     public static Movecraft getMovecraftPlugin() {
         return movecraftPlugin;
+    }
+
+    public MPerm getCraftsPerm() {
+        return craftsPerm;
     }
 }
