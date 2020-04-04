@@ -17,7 +17,7 @@ public class F3Utils {
         return faction.isPlayerPermitted(mPlayer, mPerm);
     }
 
-    public MPerm getCreative(int priority, String id, String name, String desc, Set<String> standard, boolean territory, boolean editable, boolean visible){
-        return MPerm.getCreative(priority, id, name, desc, standard, territory, editable, visible);
+    public MPerm getCreative(int priority, String id, String name, String desc, boolean territory, boolean editable, boolean visible){
+        return MPerm.getCreative(priority, id, name, desc, territory, editable, visible);
     }
 }
