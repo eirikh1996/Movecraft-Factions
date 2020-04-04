@@ -17,14 +17,14 @@
         <dependency>
             <groupId>com.massivecraft</groupId>
             <artifactId>MassiveCore</artifactId>
-            <version>3.2.3</version>
+            <version>3.3.0</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/../libs/f3/MassiveCore.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.massivecraft</groupId>
             <artifactId>Factions</artifactId>
-            <version>3.2.3</version>
+            <version>3.3.0</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/../libs/f3/Factions.jar</systemPath>
         </dependency>
