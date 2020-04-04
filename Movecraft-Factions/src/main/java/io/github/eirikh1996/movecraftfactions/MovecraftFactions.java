@@ -88,7 +88,7 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
         if (Settings.legacy) {
             craftsPerm = MPerm.getCreative(1050, "crafts", "crafts", "Allows movement of piloted crafts in the territory", MUtil.set(Rel.ALLY, Rel.LEADER, Rel.OFFICER, Rel.MEMBER), true, true, true);
         } else {
-            craftsPerm = f3Utils.getCreative(1050, "crafts", "crafts", "Allows movement of piloted crafts in the territory", MUtil.set("ALLY", "LEADER", "OFFICER", "MEMBER"), true, true, true);
+            craftsPerm = f3Utils.getCreative(1050, "crafts", "crafts", "Allows movement of piloted crafts in the territory", true, true, true);
         }
         getServer().getPluginManager().registerEvents(this, this);
         UpdateManager.getInstance().start();
