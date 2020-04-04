@@ -4,3 +4,10 @@ allowMovementInWarzone: true
 allowSinkInSafezone: false
 allowSinkInWarzone: true
 reduceStrengthOnCraftSink: true
+allowFactionSigns: true
+craftPermDefaults:
+  - LEADER
+  - OFFICER
+  - MEMBER
+  - RECRUIT
+  - ALLY

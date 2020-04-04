@@ -1,8 +1,12 @@
 package io.github.eirikh1996.movecraftfactions;
 
+import com.google.gson.Gson;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -12,28 +16,28 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
+import java.util.Map;
 
-public class UpdateManager extends BukkitRunnable {
+public class UpdateManager extends BukkitRunnable implements Listener {
     private static UpdateManager instance;
     private boolean running = false;
     //Prevents more than one instance being created
-    private UpdateManager(){}
+    private UpdateManager(){
+        runTaskTimerAsynchronously(MovecraftFactions.getInstance(), 0, 1000000);
+    }
 
     @Override
     public void run() {
-        final double currentVersion = getCurrentVersion();
-        final double newVersion = checkUpdate(currentVersion);
+        final String newVersion = newUpdateAvailable();
         MovecraftFactions.getInstance().getLogger().info("Checking for updates");
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (newVersion > currentVersion){
-
-                    for (Player p : Bukkit.getOnlinePlayers()){
-                        if (!p.hasPermission("bpb.update")){
-                            p.sendMessage("An update of Movecraft-Factions is now available. Download from https://dev.bukkit.org/projects/movecraft-factions");
-                        }
-                    }
+                if (newVersion != null){
+                    Bukkit.broadcast("An update of Movecraft-Factions is now available. Download from https://dev.bukkit.org/projects/movecraft-factions", "movecraftfactions.update");
+                    MovecraftFactions.getInstance().getLogger().warning("An update of Movecraft-Factions is now available.");
+                    MovecraftFactions.getInstance().getLogger().warning("Download from https://dev.bukkit.org/projects/movecraft-factions");
                     return;
                 }
                 MovecraftFactions.getInstance().getLogger().info("You are up to date");
@@ -41,25 +45,29 @@ public class UpdateManager extends BukkitRunnable {
         }.runTaskLaterAsynchronously(MovecraftFactions.getInstance(), 100);
     }
 
-    public static void initialize(){
-        instance = new UpdateManager();
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                final String newVer =  newUpdateAvailable();
+                if (newVer == null) {
+                    return;
+                }
+                event.getPlayer().sendMessage("An update of Movecraft-Factions is now available. Download from https://dev.bukkit.org/projects/movecraft-factions");
+            }
+        }.runTaskLaterAsynchronously(MovecraftFactions.getInstance(), 60);
     }
 
     public static UpdateManager getInstance(){
+        if (instance == null) {
+            instance = new UpdateManager();
+        }
         return instance;
     }
 
-    public void start(){
-        if (running)
-            return;
-        runTaskTimerAsynchronously(MovecraftFactions.getInstance(), 0, 1000000);
-        running = true;
-    }
-    public double getCurrentVersion(){
-        return Double.parseDouble(MovecraftFactions.getInstance().getDescription().getVersion());
-    }
 
-    public double checkUpdate(double currentVersion){
+    public String newUpdateAvailable(){
         try {
             URL url = new URL("https://servermods.forgesvc.net/servermods/files?projectids=342136");
             URLConnection conn = url.openConnection();
@@ -68,18 +76,22 @@ public class UpdateManager extends BukkitRunnable {
             conn.setDoOutput(true);
             final BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             final String response = reader.readLine();
-            final JSONArray jsonArray = (JSONArray) JSONValue.parse(response);
-            if (jsonArray.size() == 0) {
+            final Gson gson = new Gson();
+            List objList = gson.fromJson(response, List.class);
+            if (objList.size() == 0) {
                 MovecraftFactions.getInstance().getLogger().warning("No files found, or Feed URL is bad.");
-                return currentVersion;
+                return null;
             }
-            JSONObject jsonObject = (JSONObject) jsonArray.get(jsonArray.size() - 1);
-            String versionName = ((String) jsonObject.get("name"));
+            Map<String, Object> data = (Map<String, Object>) objList.get(objList.size() - 1);
+            String versionName = ((String) data.get("name"));
             String newVersion = versionName.substring(versionName.lastIndexOf("v") + 1);
-            return Double.parseDouble(newVersion);
+            int currVer = Integer.parseInt(MovecraftFactions.getInstance().getDescription().getVersion().replace("v", "").replace(".", ""));
+            int newVer = Integer.parseInt(newVersion.replace(".", ""));
+            if (newVer > currVer)
+                return newVersion;
         } catch (Exception e) {
             e.printStackTrace();
-            return currentVersion;
         }
+        return null;
     }
 }
