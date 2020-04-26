@@ -177,7 +177,7 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
 
         HitBox newHitbox;
         try {
-            Method getNewHitBox = CraftTranslateEvent.class.getDeclaredMethod("getNewHitBox");
+            Method getNewHitBox = CraftRotateEvent.class.getDeclaredMethod("getNewHitBox");
             newHitbox = (HitBox) getNewHitBox.invoke(event);
         } catch (Exception e) {
             return;
