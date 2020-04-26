@@ -259,18 +259,6 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onSignChange(SignChangeEvent event) {
-        if (!event.getLine(0).equalsIgnoreCase("[flagship]")) {
-            return;
-        }
-        if (!event.getPlayer().hasPermission("movecraftfactions.flagship")) {
-            event.setCancelled(true);
-            return;
-        }
-        event.setLine(0, ChatColor.DARK_GREEN + "Faction flagship");
-    }
-
-    @EventHandler
     public void onCraftSink(CraftSinkEvent event){
 
         Craft craft = event.getCraft();
