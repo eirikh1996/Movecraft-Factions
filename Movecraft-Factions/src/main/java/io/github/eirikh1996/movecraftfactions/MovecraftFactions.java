@@ -3,6 +3,7 @@ package io.github.eirikh1996.movecraftfactions;
 import com.massivecraft.factions.Factions;
 import com.massivecraft.factions.Rel;
 import com.massivecraft.factions.TerritoryAccess;
+import com.massivecraft.factions.cmd.CmdFactions;
 import com.massivecraft.factions.entity.*;
 import com.massivecraft.factions.event.EventFactionsPowerChange;
 import com.massivecraft.massivecore.ps.PS;
@@ -11,16 +12,16 @@ import io.github.eirikh1996.movecraftfactions.f3.F3Utils;
 import net.countercraft.movecraft.Movecraft;
 import net.countercraft.movecraft.MovecraftLocation;
 import net.countercraft.movecraft.craft.Craft;
-import net.countercraft.movecraft.events.CraftDetectEvent;
-import net.countercraft.movecraft.events.CraftRotateEvent;
-import net.countercraft.movecraft.events.CraftSinkEvent;
-import net.countercraft.movecraft.events.CraftTranslateEvent;
+import net.countercraft.movecraft.events.*;
 import net.countercraft.movecraft.utils.HashHitBox;
 import net.countercraft.movecraft.utils.HitBox;
 import org.bukkit.ChatColor;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,6 +29,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -123,7 +125,13 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
         //ignore sinking crafts
         if (event.getCraft().getSinking())
             return;
-        HashHitBox newHitbox = event.getNewHitBox();
+        HitBox newHitbox;
+        try {
+            Method getNewHitBox = CraftTranslateEvent.class.getDeclaredMethod("getNewHitBox");
+            newHitbox = (HitBox) getNewHitBox.invoke(event);
+        } catch (Exception e) {
+            return;
+        }
         MPlayer mPlayer = MPlayer.get(event.getCraft().getNotificationPlayer());
         Faction faction;
         for (MovecraftLocation moveLoc : newHitbox){
@@ -167,7 +175,13 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
         if (event.getCraft().getSinking())
             return;
 
-        HitBox newHitbox = event.getNewHitBox();
+        HitBox newHitbox;
+        try {
+            Method getNewHitBox = CraftTranslateEvent.class.getDeclaredMethod("getNewHitBox");
+            newHitbox = (HitBox) getNewHitBox.invoke(event);
+        } catch (Exception e) {
+            return;
+        }
         MPlayer mPlayer = MPlayer.get(event.getCraft().getNotificationPlayer());
         Faction faction;
         for (MovecraftLocation moveLoc : newHitbox){
@@ -202,7 +216,13 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onCraftDetect(CraftDetectEvent event) {
-        HitBox newHitbox = event.getCraft().getHitBox();
+        HitBox newHitbox;
+        try {
+            Method getNewHitBox = Craft.class.getDeclaredMethod("getHitBox");
+            newHitbox = (HitBox) getNewHitBox.invoke(event.getCraft());
+        } catch (Exception e) {
+            return;
+        }
         MPlayer mPlayer = MPlayer.get(event.getCraft().getNotificationPlayer());
         Faction faction;
         for (MovecraftLocation moveLoc : newHitbox){
@@ -239,6 +259,18 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
     }
 
     @EventHandler
+    public void onSignChange(SignChangeEvent event) {
+        if (!event.getLine(0).equalsIgnoreCase("[flagship]")) {
+            return;
+        }
+        if (!event.getPlayer().hasPermission("movecraftfactions.flagship")) {
+            event.setCancelled(true);
+            return;
+        }
+        event.setLine(0, ChatColor.DARK_GREEN + "Faction flagship");
+    }
+
+    @EventHandler
     public void onCraftSink(CraftSinkEvent event){
 
         Craft craft = event.getCraft();
@@ -247,7 +279,14 @@ public class MovecraftFactions extends JavaPlugin implements Listener {
         double power = mp.getPower();
         double newPower = power + powerOnDeath;
         Faction faction = FactionColl.get().getNone();
-        for (MovecraftLocation ml : craft.getHitBox()){
+        HitBox hitbox;
+        try {
+            Method getNewHitBox = Craft.class.getDeclaredMethod("getHitBox");
+            hitbox = (HitBox) getNewHitBox.invoke(event.getCraft());
+        } catch (Exception e) {
+            return;
+        }
+        for (MovecraftLocation ml : hitbox){
             faction = BoardColl.get().getFactionAt(PS.valueOf(ml.toBukkit(craft.getW())));
             if (faction != FactionColl.get().getNone()){
                 break;
