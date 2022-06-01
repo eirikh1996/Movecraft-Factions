@@ -1,6 +1,10 @@
 locale : en
+minY: 0
+maxY: 255
 allowMovementInSafezone: true
 allowMovementInWarzone: true
+allowPilotInSafezone: true
+allowPilotInWarzone: true
 allowSinkInSafezone: false
 allowSinkInWarzone: true
 reduceStrengthOnCraftSink: true

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>Movecraft-Factions-Parent</artifactId>
+        <groupId>io.github.eirikh1996</groupId>
+        <version>parent</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>Movecraft-Factions-Movecraft8</artifactId>
+    <version>Movecraft8</version>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>com.massivecraft</groupId>
+            <artifactId>MassiveCore</artifactId>
+            <version>2.14.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/../libs/MassiveCore.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.massivecraft</groupId>
+            <artifactId>Factions</artifactId>
+            <version>2.14.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/../libs/Factions.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>net.countercraft</groupId>
+            <artifactId>Movecraft</artifactId>
+            <version>7.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/../libs/movecraft8/Movecraft-8.0.0-a.7.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>io.github.eirikh1996</groupId>
+            <artifactId>Movecraft-Factions-F3</artifactId>
+            <version>F3</version>
+            <type>jar</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.massivecraft</groupId>
+                    <artifactId>Factions</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.github.eirikh1996</groupId>
+            <artifactId>Movecraft-Factions-API</artifactId>
+            <version>API</version>
+        </dependency>
+    </dependencies>
+</project>

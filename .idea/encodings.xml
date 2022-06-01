@@ -2,10 +2,15 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/API/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/API/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/F3" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/F3/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/F3/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Movecraft-Factions" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Movecraft-Factions-Movecraft7/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Movecraft-Factions-Movecraft7/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Movecraft-Factions-Movecraft8/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Movecraft-Factions-Movecraft8/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Movecraft-Factions/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Movecraft-Factions/src/main/resources" charset="UTF-8" />
   </component>

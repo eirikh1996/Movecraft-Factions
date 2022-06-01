@@ -10,6 +10,8 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/F3/pom.xml" />
+        <option value="$PROJECT_DIR$/Movecraft-Factions-Movecraft8/pom.xml" />
       </list>
     </option>
   </component>

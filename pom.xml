@@ -13,7 +13,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <modules>
+        <module>API</module>
         <module>F3</module>
+        <module>Movecraft-Factions-Movecraft7</module>
+        <module>Movecraft-Factions-Movecraft8</module>
         <module>Movecraft-Factions</module>
 
     </modules>

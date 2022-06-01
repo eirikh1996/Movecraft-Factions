@@ -6,15 +6,19 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="F3" />
         <module name="Movecraft-Factions-F3" />
+        <module name="API" />
+        <module name="F3" />
+        <module name="Movecraft-Factions-Movecraft7" />
+        <module name="Movecraft-Factions-Movecraft8" />
       </profile>
       <profile name="Annotation profile for Movecraft-Factions Parent Pom" enabled="true">
         <sourceOutputDir name="../target/generated-sources/annotations" />
         <sourceTestOutputDir name="../target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="MovecraftFactions" />
         <module name="Movecraft-Factions (1)" />
+        <module name="Movecraft-Factions" />
+        <module name="MovecraftFactions" />
       </profile>
     </annotationProcessing>
   </component>

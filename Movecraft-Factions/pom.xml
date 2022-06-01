@@ -15,7 +15,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <version>1.4</version>
+    <version>1.5</version>
 
     <dependencies>
         <dependency>
@@ -50,6 +50,21 @@
                     <artifactId>Factions</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>io.github.eirikh1996</groupId>
+            <artifactId>Movecraft-Factions-API</artifactId>
+            <version>API</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.eirikh1996</groupId>
+            <artifactId>Movecraft-Factions-Movecraft7</artifactId>
+            <version>Movecraft7</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.eirikh1996</groupId>
+            <artifactId>Movecraft-Factions-Movecraft8</artifactId>
+            <version>Movecraft8</version>
         </dependency>
     </dependencies>
     <build>
@@ -97,6 +112,9 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
+                                    <include>io.github.eirikh1996:Movecraft-Factions-API</include>
+                                    <include>io.github.eirikh1996:Movecraft-Factions-Movecraft7</include>
+                                    <include>io.github.eirikh1996:Movecraft-Factions-Movecraft8</include>
                                     <include>io.github.eirikh1996:Movecraft-Factions-F3</include>
                                     <include>io.github.eirikh1996:Movecraft-Factions</include>
                                 </includes>
